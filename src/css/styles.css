@@ -13,8 +13,15 @@ body {
   line-height: 1.5;
 }
 
-div {
-  padding: 30px 0;
+img {
+  display: block;
+  width: 350px;
+  height: 250px;
+}
+
+p {
+  padding: 0;
+  margin: 0;
 }
 
 form {
@@ -85,9 +92,36 @@ form {
   background: #a3d0c3;
   box-shadow: 0 15px 20px rgba(161, 209, 190, 0.4);
   color: white;
-  transform: translateY(-7px);
 }
 
-.load-more.is-hidden {
+.is-hidden {
   display: none;
+}
+
+.gallery {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.info {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+}
+
+.img_stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-card {
+  border: 1px solid #ccc;
+}
+
+.photo-card:hover {
+  border: 1px solid #777;
 }
