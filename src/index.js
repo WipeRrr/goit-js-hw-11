@@ -19,14 +19,15 @@ let lightbox = new SimpleLightbox('.photo-card a', {
   captionDelay: 250,
 });
 
-function onSearch(e) {
+ function onSearch(e) {
   e.preventDefault();
   name = e.currentTarget.searchQuery.value;
-  page = 1;
+
   if (name === '') {
     return;
   }
   e.currentTarget.reset();
+
   fetchImages(name)
     .then(renderImg)
     .catch(error => {
@@ -36,7 +37,7 @@ function onSearch(e) {
   loadMoreEl.classList.remove(`is-hidden`);
 }
 
-function onLoadMore() {
+ function onLoadMore() {
   fetchImages(name)
     .then(renderImg)
     .catch(error => {
@@ -45,6 +46,7 @@ function onLoadMore() {
 }
 
 function renderImg(data) {
+  loadMoreEl.classList.remove(`is-hidden`);
   if (data.hits.length === 0) {
     Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
@@ -62,8 +64,8 @@ function renderImg(data) {
         downloads,
       }) => {
         return `<div class="photo-card">
-        <a class="gallery__item" href="${largeImageURL}">
-  <img class="gallery__image" src="${webformatURL}" alt="${tags} " loading="lazy" /> </a>
+        <a class="gallery-item" href="${largeImageURL}">
+  <img class="gallery-image" src="${webformatURL}" alt="${tags} " loading="lazy" /> </a>
   <div class="info">
     <p class="info-item">
       <b>Likes<span class="img_stats">${likes}</span></b>

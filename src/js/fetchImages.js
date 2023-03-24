@@ -2,9 +2,10 @@ import axios from 'axios';
 let page = 1;
 let previousName = null;
 
-export function fetchImages(name) {
+export async function fetchImages(name) {
   page = name === previousName ? page + 1 : 1;
   previousName = name;
+  
 
   const BASE_URL = 'https://pixabay.com/api/';
 
@@ -15,17 +16,10 @@ export function fetchImages(name) {
     orientation: `horizontal`,
     safesearch: `true`,
   });
-  return axios
-    .get(`${BASE_URL}?${searchParams}&per_page=40&page=${page}`)
-    .then(({ data }) => {
-      console.log(page);
-      return data;
-    })
-    .catch(error => {
-      console.error(error);
-    });
+  const response = await axios.get(
+    `${BASE_URL}?${searchParams}&per_page=40&page=${page}`
+  );
+
+  return response.data;
 }
 
-export function resetPage() {
-  page = 1;
-}
