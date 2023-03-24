@@ -13,6 +13,11 @@ inputEl.addEventListener('submit', onSearch);
 loadMoreEl.addEventListener('click', onLoadMore);
 
 let name = '';
+let lightbox = new SimpleLightbox('.photo-card a', {
+  captions: true,
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
 function onSearch(e) {
   e.preventDefault();
@@ -29,7 +34,6 @@ function onSearch(e) {
     });
   clearGallery();
   loadMoreEl.classList.remove(`is-hidden`);
-  refresh();
 }
 
 function onLoadMore() {
@@ -38,7 +42,6 @@ function onLoadMore() {
     .catch(error => {
       console.log(error);
     });
-  refresh();
 }
 
 function renderImg(data) {
@@ -57,7 +60,6 @@ function renderImg(data) {
         views,
         comments,
         downloads,
-        pageURL,
       }) => {
         return `<div class="photo-card">
         <a class="gallery__item" href="${largeImageURL}">
@@ -84,9 +86,7 @@ function renderImg(data) {
 
   galleryEl.insertAdjacentHTML(`beforeend`, markup);
 
-  new SimpleLightbox('.photo-card a', {
-    captionDelay: 250,
-  });
+  lightbox.refresh();
 }
 
 function clearGallery() {
