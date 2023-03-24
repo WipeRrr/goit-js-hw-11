@@ -17,7 +17,7 @@ let name = '';
 function onSearch(e) {
   e.preventDefault();
   name = e.currentTarget.searchQuery.value;
-
+  page = 1;
   if (name === '') {
     return;
   }
@@ -29,6 +29,7 @@ function onSearch(e) {
     });
   clearGallery();
   loadMoreEl.classList.remove(`is-hidden`);
+  refresh();
 }
 
 function onLoadMore() {
@@ -37,10 +38,10 @@ function onLoadMore() {
     .catch(error => {
       console.log(error);
     });
+  refresh();
 }
 
 function renderImg(data) {
-  console.log(data);
   if (data.hits.length === 0) {
     Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
@@ -82,6 +83,7 @@ function renderImg(data) {
     .join('');
 
   galleryEl.insertAdjacentHTML(`beforeend`, markup);
+
   new SimpleLightbox('.photo-card a', {
     captionDelay: 250,
   });
