@@ -3,8 +3,6 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { fetchImages, resetPage } from './js/fetchImages';
-import InfiniteScroll from 'infinite-scroll';
-
 
 const inputEl = document.querySelector('#search-form');
 const galleryEl = document.querySelector('.gallery');
@@ -67,7 +65,6 @@ async function onSearch(e) {
 }
 
 async function onLoadMore() {
-  
   const response = await fetchImages(name);
   renderImg(response);
   lightbox.refresh();
@@ -121,7 +118,6 @@ function renderImg(data) {
 
 function clearGallery() {
   galleryEl.innerHTML = '';
- 
 }
 
 function smoothScroll() {
@@ -130,25 +126,7 @@ function smoothScroll() {
     .firstElementChild.getBoundingClientRect();
 
   window.scrollBy({
-    top: cardHeight * 2,
+    top: cardHeight * 3,
     behavior: 'smooth',
   });
 }
-
-
-
-
- let infScroll = new InfiniteScroll(galleryEl, {
-   // options
-   path: '.pagination__next',
-   append: '.photo-card',
-   history: false,
- });
-
-
-galleryEl.infiniteScroll({
-  path: '.pagination__next',
-  append: '.photo-card',
-  history: false,
-  status: '.page-load-status',
-});

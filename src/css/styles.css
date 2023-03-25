@@ -12,7 +12,7 @@ body {
   color: #212121;
   line-height: 1.5;
   padding-left: 20px;
-  padding-right:20px;
+  padding-right: 20px;
 }
 
 img {
@@ -92,9 +92,9 @@ form {
   color: white;
 }
 
-.end-collection-text{
+.end-collection-text {
   display: flex;
-justify-content: center;
+  justify-content: center;
 }
 
 .is-hidden {
@@ -129,7 +129,7 @@ justify-content: center;
 }
 
 .photo-card {
-  flex-basis: calc((100% - 90px)/4);
+  flex-basis: calc((100% - 90px) / 4);
   background-color: #a3d0c3;
   border-radius: 8px;
   margin: 10px;
@@ -140,4 +140,3 @@ justify-content: center;
 .photo-card:hover {
   border: 1px solid #777;
 }
-
