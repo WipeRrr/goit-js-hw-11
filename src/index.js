@@ -3,17 +3,13 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { fetchImages, resetPage } from './js/fetchImages';
+import InfiniteScroll from 'infinite-scroll';
+
 
 const inputEl = document.querySelector('#search-form');
 const galleryEl = document.querySelector('.gallery');
 const loadMoreEl = document.querySelector(`.load-more`);
-const endText = document.querySelector(`.end-collection-text`);
-
-inputEl.addEventListener('submit', onSearch);
-loadMoreEl.addEventListener('click', onLoadMore);
-
-let currentHits = 0;
-let name = '';
+const endCollectionText = document.querySelector(`.end-collection-text`);
 
 let lightbox = new SimpleLightbox('.photo-card a', {
   captions: true,
@@ -21,7 +17,13 @@ let lightbox = new SimpleLightbox('.photo-card a', {
   captionDelay: 250,
 });
 
-function onSearch(e) {
+let currentHits = 0;
+let name = '';
+
+inputEl.addEventListener('submit', onSearch);
+loadMoreEl.addEventListener('click', onLoadMore);
+
+async function onSearch(e) {
   e.preventDefault();
   name = e.currentTarget.searchQuery.value;
   resetPage();
@@ -29,39 +31,56 @@ function onSearch(e) {
     return;
   }
   e.currentTarget.reset();
-  currentHits = 0;
-  fetchImages(name)
-    .then(renderImg)
-    .catch(error => {
-      console.log(error);
-    });
-  clearGallery();
-  loadMoreEl.classList.remove(`is-hidden`);
+  const response = await fetchImages(name);
+  currentHits = response.hits.length;
+
+  if (response.totalHits > 40) {
+    loadMoreEl.classList.remove('is-hidden');
+  } else {
+    loadMoreEl.classList.add('is-hidden');
+  }
+
+  try {
+    if (response.totalHits > 0) {
+      Notify.success(`Hooray! We found ${response.totalHits} images.`);
+      clearGallery();
+      renderImg(response);
+      lightbox.refresh();
+      endCollectionText.classList.add('is-hidden');
+    }
+    if (currentHits === response.totalHits) {
+      loadMoreEl.classList.add('is-hidden');
+      endCollectionText.classList.remove('is-hidden');
+    }
+
+    if (response.totalHits === 0) {
+      clearGallery();
+      Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      loadMoreEl.classList.add('is-hidden');
+      endCollectionText.classList.add('is-hidden');
+    }
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-function onLoadMore() {
-  fetchImages(name)
-    .then(renderImg)
-    .catch(error => {
-      console.log(error);
-    });
+async function onLoadMore() {
+  
+  const response = await fetchImages(name);
+  renderImg(response);
+  lightbox.refresh();
+  currentHits += response.hits.length;
+
+  if (currentHits === response.totalHits) {
+    loadMoreEl.classList.add('is-hidden');
+    endCollectionText.classList.remove('is-hidden');
+  }
+  smoothScroll();
 }
 
 function renderImg(data) {
-  if (data.hits.length === 0) {
-    Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-    loadMoreEl.classList.add(`is-hidden`);
-  }
-  currentHits += data.hits.length;
-  console.log(currentHits);
-  if (currentHits === data.totalhits) {
-    loadMoreEl.classList.add(`is-hidden`);
-    endText.classList.remove(`is-hidden`);
-     console.log(endText);
-  }
-  console.log(endText);
   const markup = data.hits
     .map(
       ({
@@ -97,10 +116,39 @@ function renderImg(data) {
     .join('');
 
   galleryEl.insertAdjacentHTML(`beforeend`, markup);
-
   lightbox.refresh();
 }
 
 function clearGallery() {
   galleryEl.innerHTML = '';
+ 
 }
+
+function smoothScroll() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
+}
+
+
+
+
+ let infScroll = new InfiniteScroll(galleryEl, {
+   // options
+   path: '.pagination__next',
+   append: '.photo-card',
+   history: false,
+ });
+
+
+galleryEl.infiniteScroll({
+  path: '.pagination__next',
+  append: '.photo-card',
+  history: false,
+  status: '.page-load-status',
+});
