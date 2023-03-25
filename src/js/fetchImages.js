@@ -1,12 +1,8 @@
 import axios from 'axios';
+
 let page = 1;
-let previousName = null;
 
 export async function fetchImages(name) {
-  page = name === previousName ? page + 1 : 1;
-  previousName = name;
-  
-
   const BASE_URL = 'https://pixabay.com/api/';
 
   const searchParams = new URLSearchParams({
@@ -16,10 +12,14 @@ export async function fetchImages(name) {
     orientation: `horizontal`,
     safesearch: `true`,
   });
+
   const response = await axios.get(
     `${BASE_URL}?${searchParams}&per_page=40&page=${page}`
   );
-
+  page += 1;
   return response.data;
 }
 
+export function resetPage() {
+  page = 1;
+}

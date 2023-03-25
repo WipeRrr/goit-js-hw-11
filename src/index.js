@@ -2,32 +2,34 @@ import './css/styles.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import { fetchImages } from './js/fetchImages';
+import { fetchImages, resetPage } from './js/fetchImages';
 
 const inputEl = document.querySelector('#search-form');
 const galleryEl = document.querySelector('.gallery');
 const loadMoreEl = document.querySelector(`.load-more`);
+const endText = document.querySelector(`.end-collection-text`);
 
 inputEl.addEventListener('submit', onSearch);
-
 loadMoreEl.addEventListener('click', onLoadMore);
 
+let currentHits = 0;
 let name = '';
+
 let lightbox = new SimpleLightbox('.photo-card a', {
   captions: true,
   captionsData: 'alt',
   captionDelay: 250,
 });
 
- function onSearch(e) {
+function onSearch(e) {
   e.preventDefault();
   name = e.currentTarget.searchQuery.value;
-
+  resetPage();
   if (name === '') {
     return;
   }
   e.currentTarget.reset();
-
+  currentHits = 0;
   fetchImages(name)
     .then(renderImg)
     .catch(error => {
@@ -37,7 +39,7 @@ let lightbox = new SimpleLightbox('.photo-card a', {
   loadMoreEl.classList.remove(`is-hidden`);
 }
 
- function onLoadMore() {
+function onLoadMore() {
   fetchImages(name)
     .then(renderImg)
     .catch(error => {
@@ -46,12 +48,20 @@ let lightbox = new SimpleLightbox('.photo-card a', {
 }
 
 function renderImg(data) {
-  loadMoreEl.classList.remove(`is-hidden`);
   if (data.hits.length === 0) {
     Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
+    loadMoreEl.classList.add(`is-hidden`);
   }
+  currentHits += data.hits.length;
+  console.log(currentHits);
+  if (currentHits === data.totalhits) {
+    loadMoreEl.classList.add(`is-hidden`);
+    endText.classList.remove(`is-hidden`);
+     console.log(endText);
+  }
+  console.log(endText);
   const markup = data.hits
     .map(
       ({
