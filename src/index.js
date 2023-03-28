@@ -23,7 +23,7 @@ loadMoreEl.addEventListener('click', onLoadMore);
 
 async function onSearch(e) {
   e.preventDefault();
-  name = e.currentTarget.searchQuery.value;
+  name = e.currentTarget.searchQuery.value.trim();
   resetPage();
   if (name === '') {
     return;
